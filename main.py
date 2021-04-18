@@ -4,7 +4,7 @@ from fastapi import FastAPI
 app = FastAPI()
 
 @app.post("/mail/{email}")
-async def register_email(email, lat, long):
+async def register_email(email, lat, lon):
     """Registers a client based on email
 
     Parameters
@@ -13,15 +13,15 @@ async def register_email(email, lat, long):
         The email to register
     lat : int
         Lattitude for the client, closest integer
-    long: int
-        Longitude for the client, closest integer
+    lon: int
+        longitude for the client, closest integer
 
     Returns
     -------
     """
 
 @app.post("/phone/{phone}")
-async def register_phone(phone, lat, long):
+async def register_phone(phone, lat, lon):
     """Registers a client based on phone number
 
     Parameters
@@ -30,8 +30,8 @@ async def register_phone(phone, lat, long):
         The phone number to register
     lat : int
         Lattitude for the client, closest integer
-    long: int
-        Longitude for the client, closest integer
+    lon: int
+        longitude for the client, closest integer
 
     Returns
     -------
@@ -39,7 +39,7 @@ async def register_phone(phone, lat, long):
 
 
 @app.put("/mail/{email}")
-async def update_geolocation_email(email, lat, long):
+async def update_geolocation_email(email, lat, lon):
     """Updates geolocation info for an email
 
     Parameters
@@ -48,8 +48,8 @@ async def update_geolocation_email(email, lat, long):
         The email to update info for
     lat : int
         Lattitude for the client, closest integer
-    long: int
-        Longitude for the client, closest integer
+    lon: int
+        longitude for the client, closest integer
 
     Returns
     -------
@@ -57,7 +57,7 @@ async def update_geolocation_email(email, lat, long):
 
 
 @app.put("/phone/{phone}")
-async def update_geolocation_phone(phone, lat, long):
+async def update_geolocation_phone(phone, lat, lon):
     """Updates geolocation info for a phone nubmer
 
     Parameters
@@ -66,8 +66,8 @@ async def update_geolocation_phone(phone, lat, long):
         The phone number to update info for
     lat : int
         Lattitude for the client, closest integer
-    long: int
-        Longitude for the client, closest integer
+    lon: int
+        longitude for the client, closest integer
 
     Returns
     -------

@@ -44,7 +44,6 @@ def messages(area_name=None):
 
     url = MESSAGES_ENDPOINT if area_name is None else MESSAGES_ENDPOINT + f'&trafficareaname={area_name}'
     r = requests.get(url)
-    
     root = ET.fromstring(r.content)
 
     msg_list = []
@@ -60,17 +59,28 @@ def messages(area_name=None):
 
     return msg_list
 
-def areas():
+def areas(lat=None, lon=None):
     """Sends a request to the areas endpoint
+
+    Parameters
+    ----------
+    lat : int, optional
+        Latitude for the traffic area, if specified
+    lon: int, optional
+        Longitude for the traffic are, if specificed
 
     Returns
     -------
-    list
-        The list of traffic areas
+    list | str
+        The list of traffic areas, or a specific area if lat/lon are specified
     """
 
-    r = requests.get(AREAS_ENDPOINT)
+    if lat is not None and lon is not None:
+        r = requests.get(AREAS_ENDPOINT + f'&latitude={lat}&longitude={lon}')
+        root = ET.fromstring(r.content)
+        return root.find('area').get('name')
 
+    r = requests.get(AREAS_ENDPOINT)
     root = ET.fromstring(r.content)
 
     area_list = []
