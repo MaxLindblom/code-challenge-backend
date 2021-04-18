@@ -1,102 +1,90 @@
 """Main class containing all exposed endpoints"""
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from custom_types.client import Client
+import database.connector as db
+from pydantic import BaseModel
+from typing import Optional
+
+class ClientIn(BaseModel):
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    lat: int
+    lon: int
 
 app = FastAPI()
 
-@app.post("/mail/{email}")
-async def register_email(email, lat, lon):
-    """Registers a client based on email
+@app.post("/clients", response_model=Client)
+async def register_client(client: ClientIn):
+    """Registers a client
 
     Parameters
     ----------
-    email : str
-        The email to register
-    lat : int
-        Lattitude for the client, closest integer
-    lon: int
-        longitude for the client, closest integer
+    client: ClientIn
+        The client to register
 
     Returns
     -------
+    Client
+        The client, if registered succesfully
     """
 
-@app.post("/phone/{phone}")
-async def register_phone(phone, lat, lon):
-    """Registers a client based on phone number
+    if client.email is None and client.phone is None:
+        raise HTTPException(status_code=400, detail="Must provide either email or phone number")
+    new_client = Client(client.lat, client.lon, email=client.email, phone=client.phone)
+    added = db.add_client(new_client)
+    if added is None:
+        raise HTTPException(status_code=400, detail=f"Could not register client")
+    elif new_client == added:
+        return new_client
+
+@app.put("/clients", response_model=Client)
+async def update_geolocation(client: ClientIn):
+    """Updates geolocation info for a client
 
     Parameters
     ----------
-    phone : str
-        The phone number to register
-    lat : int
-        Lattitude for the client, closest integer
-    lon: int
-        longitude for the client, closest integer
+    client: ClientIn
+        Client containing new geolocation data
 
     Returns
     -------
+    Client
+        The updated client
     """
 
+    if client.email is None and client.phone is None:
+        raise HTTPException(status_code=400, detail="Must provide either email or phone number")
+    existing_client = Client(client.lat, client.lon, email=client.email, phone=client.phone)
+    if db.get_client(existing_client) is None:
+        raise HTTPException(status_code=400, detail="Client doesn't exist")
+    updated = db.update_client(existing_client)
+    if updated is None:
+        raise HTTPException(status_code=400, detail=f"Could not update client")
+    elif existing_client == updated:
+        return updated
 
-@app.put("/mail/{email}")
-async def update_geolocation_email(email, lat, lon):
-    """Updates geolocation info for an email
+@app.delete("/clients", response_model=Client)
+async def delete_client(client: ClientIn):
+    """Unsubscribes a client from the service
 
     Parameters
     ----------
-    email : str
-        The email to update info for
-    lat : int
-        Lattitude for the client, closest integer
-    lon: int
-        longitude for the client, closest integer
+    client: ClientIn
+        Client to be removed
 
     Returns
     -------
+    Client
+        The client that was removed
     """
 
-
-@app.put("/phone/{phone}")
-async def update_geolocation_phone(phone, lat, lon):
-    """Updates geolocation info for a phone nubmer
-
-    Parameters
-    ----------
-    phone : str
-        The phone number to update info for
-    lat : int
-        Lattitude for the client, closest integer
-    lon: int
-        longitude for the client, closest integer
-
-    Returns
-    -------
-    """
-
-
-@app.delete("/mail/{email}")
-async def delete_email(email):
-    """Unsubscribes an email from the service
-
-    Parameters
-    ----------
-    email : str
-        The email to unsubscribe
-
-    Returns
-    -------
-    """
-
-
-@app.delete("/phone/{phone}")
-async def delete_phone(phone):
-    """Unsubscribes a phone number from the service
-
-    Parameters
-    ----------
-    phone : str
-        The phone number to unsubscribe
-
-    Returns
-    -------
-    """
+    if client.email is None and client.phone is None:
+        raise HTTPException(status_code=400, detail="Must provide either email or phone number")
+    existing_client = Client(client.lat, client.lon, email=client.email, phone=client.phone)
+    if db.get_client(existing_client) is None:
+        raise HTTPException(status_code=400, detail="Client doesn't exist")
+    removed = db.remove_client(existing_client)
+    if removed is None:
+        raise HTTPException(status_code=400, detail=f"Could not unsubscribe client")
+    elif existing_client == removed:
+        return removed
