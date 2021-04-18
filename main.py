@@ -11,9 +11,16 @@ class ClientIn(BaseModel):
     lat: int
     lon: int
 
+class ClientOut(BaseModel):
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    lat: int
+    lon: int
+    traffic_area: str
+
 app = FastAPI()
 
-@app.post("/clients", response_model=Client)
+@app.post("/clients", response_model=ClientOut)
 async def register_client(client: ClientIn):
     """Registers a client
 
@@ -36,7 +43,7 @@ async def register_client(client: ClientIn):
     elif new_client == added:
         return new_client
 
-@app.put("/clients", response_model=Client)
+@app.put("/clients", response_model=ClientOut)
 async def update_geolocation(client: ClientIn):
     """Updates geolocation info for a client
 
@@ -58,7 +65,7 @@ async def update_geolocation(client: ClientIn):
     updated = db.update_client(existing_client)
     return updated
 
-@app.delete("/clients", response_model=Client)
+@app.delete("/clients", response_model=ClientOut)
 async def delete_client(client: ClientIn):
     """Unsubscribes a client from the service
 

@@ -8,6 +8,8 @@ from datetime import datetime
 con = sqlite3.connect('test.sqlite', detect_types=sqlite3.PARSE_DECLTYPES)
 cur = con.cursor()
 
+cur.execute("DROP TABLE IF EXISTS clients")
+
 # Create our table
 cur.execute('''CREATE TABLE clients (
                email TEXT,

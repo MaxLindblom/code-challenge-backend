@@ -19,11 +19,11 @@ def add_client(client):
         The client if it was added, otherwise None
     """
 
-    con, cur = _connect()
+    (con, cur) = _connect()
     try:
         with con:
-            con.execute("INSERT INTO clients VALUES (?, ?, ?, ?, ?, ?)",
-            client.email, client.phone, client.lat, client.lon, client.traffic_area, datetime.now())
+            cur.execute("INSERT INTO clients VALUES (?, ?, ?, ?, ?, ?)",
+            (client.email, client.phone, client.lat, client.lon, client.traffic_area, datetime.now()))
             return_val = client
     except sqlite3.IntegrityError:
         return_val = None
@@ -43,8 +43,9 @@ def get_client(client):
     Client
         The client if it was found, otherwise None
     """
-    con, cur = _connect()
-    cur.execute("SELECT * FROM clients WHERE (email = ?) AND (phone = ?)", (client.email, client.phone))
+
+    (con, cur) = _connect()
+    cur.execute("SELECT * FROM clients WHERE (email = ?) OR (phone = ?)", (client.email, client.phone))
     db_client = cur.fetchone()
     _disconnect(con)
     return db_client
@@ -62,8 +63,9 @@ def update_client(client):
     Client
         The updated client
     """
-    con, cur = _connect()
-    cur.execute("UPDATE clients SET latitutde = ?, longitude = ?, traffic_area = ? WHERE (email = ?) AND (phone = ?)",
+
+    (con, cur) = _connect()
+    cur.execute("UPDATE clients SET latitutde = ?, longitude = ?, traffic_area = ? WHERE (email = ?) OR (phone = ?)",
     (client.lat, client.lon, client.traffic_area, client.email, client.phone))
     _disconnect(con)
     return client
@@ -81,15 +83,16 @@ def remove_client(client):
     Client
         The removed client
     """
-    con, cur = _connect()
-    cur.execute("DELETE FROM clients WHERE (email = ?) AND (phone = ?)", (client.email, client.phone))
+
+    (con, cur) = _connect()
+    cur.execute("DELETE FROM clients WHERE (email = ?) OR (phone = ?)", (client.email, client.phone))
     _disconnect(con)
     return client
 
 def _connect():
     con = sqlite3.connect(DB_PATH, detect_types=sqlite3.PARSE_DECLTYPES)
     cur = con.cursor()
-    return con, cur
+    return (con, cur)
 
 def _disconnect(con):
     con.commit()
