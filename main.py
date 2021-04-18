@@ -28,8 +28,7 @@ async def register_client(client: ClientIn):
         The client, if registered succesfully
     """
 
-    if client.email is None and client.phone is None:
-        raise HTTPException(status_code=400, detail="Must provide either email or phone number")
+    _check_client(client)
     new_client = Client(client.lat, client.lon, email=client.email, phone=client.phone)
     added = db.add_client(new_client)
     if added is None:
@@ -52,16 +51,12 @@ async def update_geolocation(client: ClientIn):
         The updated client
     """
 
-    if client.email is None and client.phone is None:
-        raise HTTPException(status_code=400, detail="Must provide either email or phone number")
+    _check_client(client)
     existing_client = Client(client.lat, client.lon, email=client.email, phone=client.phone)
     if db.get_client(existing_client) is None:
         raise HTTPException(status_code=400, detail="Client doesn't exist")
     updated = db.update_client(existing_client)
-    if updated is None:
-        raise HTTPException(status_code=400, detail=f"Could not update client")
-    elif existing_client == updated:
-        return updated
+    return updated
 
 @app.delete("/clients", response_model=Client)
 async def delete_client(client: ClientIn):
@@ -78,8 +73,7 @@ async def delete_client(client: ClientIn):
         The client that was removed
     """
 
-    if client.email is None and client.phone is None:
-        raise HTTPException(status_code=400, detail="Must provide either email or phone number")
+    _check_client(client)
     existing_client = Client(client.lat, client.lon, email=client.email, phone=client.phone)
     if db.get_client(existing_client) is None:
         raise HTTPException(status_code=400, detail="Client doesn't exist")
@@ -88,3 +82,7 @@ async def delete_client(client: ClientIn):
         raise HTTPException(status_code=400, detail=f"Could not unsubscribe client")
     elif existing_client == removed:
         return removed
+
+def _check_client(client):
+    if client.email is None and client.phone is None:
+        raise HTTPException(status_code=400, detail="Must provide either email or phone number")

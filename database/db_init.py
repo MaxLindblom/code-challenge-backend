@@ -12,10 +12,10 @@ cur = con.cursor()
 cur.execute('''CREATE TABLE clients (
                email TEXT,
                phone TEXT,
-               latitude REAL,
-               longitude REAL,
+               latitude INTEGER,
+               longitude INTEGER,
                traffic_area TEXT,
-               register_date date,
+               register_date timestamp,
                PRIMARY KEY (email, phone));''')
 
 # Insert two dummy clients
