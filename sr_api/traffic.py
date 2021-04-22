@@ -7,8 +7,8 @@ For full documentation:
 https://sverigesradio.se/api/documentation/v2/metoder/trafik.html
 """
 
-import requests
 import xml.etree.ElementTree as ET
+import requests
 
 MESSAGES_ENDPOINT = 'http://api.sr.se/api/v2/traffic/messages?pagination=false'
 AREAS_ENDPOINT = 'http://api.sr.se/api/v2/traffic/areas?pagination=false'
@@ -28,7 +28,8 @@ CATEGORY_MAPPING = {
     '3': 'Övrigt'
 }
 
-def messages(area_name=None): 
+
+def messages(area_name=None):
     """Sends a request to the messages endpoint
 
     Parameters
@@ -42,12 +43,13 @@ def messages(area_name=None):
         A full list of messages as received from the endpoint
     """
 
-    url = MESSAGES_ENDPOINT if area_name is None else MESSAGES_ENDPOINT + f'&trafficareaname={area_name}'
+    url = MESSAGES_ENDPOINT if area_name is None else MESSAGES_ENDPOINT + \
+        f'&trafficareaname={area_name}'
     r = requests.get(url)
     root = ET.fromstring(r.content)
 
     msg_list = []
-    for msg in root.find('messages').iter('message'): # TODO: include None-check?
+    for msg in root.find('messages').iter('message'):  # TODO: include None-check?
         msg_list.append({
             'timestamp': msg.find('createddate').text,
             'priority': PRIORITY_MAPPING[msg.attrib['priority']],
@@ -58,6 +60,7 @@ def messages(area_name=None):
         })
 
     return msg_list
+
 
 def areas(lat=None, lon=None):
     """Sends a request to the areas endpoint
@@ -76,12 +79,12 @@ def areas(lat=None, lon=None):
     """
 
     if lat is not None and lon is not None:
-        r = requests.get(AREAS_ENDPOINT + f'&latitude={lat}&longitude={lon}')
-        root = ET.fromstring(r.content)
+        req = requests.get(AREAS_ENDPOINT + f'&latitude={lat}&longitude={lon}')
+        root = ET.fromstring(req.content)
         return root.find('area').get('name')
 
-    r = requests.get(AREAS_ENDPOINT)
-    root = ET.fromstring(r.content)
+    req = requests.get(AREAS_ENDPOINT)
+    root = ET.fromstring(req.content)
 
     area_list = []
     for area in root.find('areas').iter('area'):

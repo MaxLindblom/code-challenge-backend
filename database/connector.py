@@ -5,6 +5,7 @@ from datetime import datetime
 
 DB_PATH = 'test.sqlite'
 
+
 def add_client(client):
     """Add a client to database, if it doesn't already exist
 
@@ -12,7 +13,7 @@ def add_client(client):
     ----------
     client : Client
         The client to add
-    
+
     Returns
     -------
     Client
@@ -23,12 +24,18 @@ def add_client(client):
     try:
         with con:
             cur.execute("INSERT INTO clients VALUES (?, ?, ?, ?, ?, ?)",
-            (client.email, client.phone, client.lat, client.lon, client.traffic_area, datetime.now()))
+                        (client.email,
+                         client.phone,
+                         client.lat,
+                         client.lon,
+                         client.traffic_area,
+                         datetime.now()))
             return_val = client
     except sqlite3.IntegrityError:
         return_val = None
     _disconnect(con)
     return return_val
+
 
 def get_client(client):
     """Retrieves a client from database, if it exists
@@ -37,7 +44,7 @@ def get_client(client):
     ----------
     client : Client
         The client to get
-    
+
     Returns
     -------
     Client
@@ -45,10 +52,12 @@ def get_client(client):
     """
 
     (con, cur) = _connect()
-    cur.execute("SELECT * FROM clients WHERE (email = ?) OR (phone = ?)", (client.email, client.phone))
+    cur.execute("SELECT * FROM clients WHERE (email = ?) OR (phone = ?)",
+                (client.email, client.phone))
     db_client = cur.fetchone()
     _disconnect(con)
     return db_client
+
 
 def update_client(client):
     """Updates a client in database, if it exists
@@ -57,7 +66,7 @@ def update_client(client):
     ----------
     client : Client
         The client to update
-    
+
     Returns
     -------
     Client
@@ -65,10 +74,11 @@ def update_client(client):
     """
 
     (con, cur) = _connect()
-    cur.execute("UPDATE clients SET latitutde = ?, longitude = ?, traffic_area = ? WHERE (email = ?) OR (phone = ?)",
-    (client.lat, client.lon, client.traffic_area, client.email, client.phone))
+    cur.execute("UPDATE clients SET latitude = ?, longitude = ?, traffic_area = ? WHERE (email = ?) OR (phone = ?)",
+                (client.lat, client.lon, client.traffic_area, client.email, client.phone))
     _disconnect(con)
     return client
+
 
 def remove_client(client):
     """Removes a client from database, if it exists
@@ -77,7 +87,7 @@ def remove_client(client):
     ----------
     client : Client
         The client to remove
-    
+
     Returns
     -------
     Client
@@ -85,16 +95,18 @@ def remove_client(client):
     """
 
     (con, cur) = _connect()
-    cur.execute("DELETE FROM clients WHERE (email = ?) OR (phone = ?)", (client.email, client.phone))
+    cur.execute("DELETE FROM clients WHERE (email = ?) OR (phone = ?)",
+                (client.email, client.phone))
     _disconnect(con)
     return client
+
 
 def _connect():
     con = sqlite3.connect(DB_PATH, detect_types=sqlite3.PARSE_DECLTYPES)
     cur = con.cursor()
     return (con, cur)
 
+
 def _disconnect(con):
     con.commit()
     con.close()
-
