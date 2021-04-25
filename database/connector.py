@@ -59,6 +59,23 @@ def get_client(client):
     return db_client
 
 
+def get_all_clients():
+    """Gets all existing clients from the database
+
+    Returns
+    -------
+    list
+        List of all rows in the clients table
+    """
+
+    (con, cur) = _connect()
+    cur.execute("SELECT * FROM clients")
+
+    rows = cur.fetchall()
+    _disconnect(con)
+    return rows
+
+
 def update_client(client):
     """Updates a client in database, if it exists
 
@@ -74,7 +91,8 @@ def update_client(client):
     """
 
     (con, cur) = _connect()
-    cur.execute("UPDATE clients SET latitude = ?, longitude = ?, traffic_area = ? WHERE (email = ?) OR (phone = ?)",
+    cur.execute("UPDATE clients SET latitude = ?, longitude = ?, traffic_area = ?" +
+                "WHERE (email = ?) OR (phone = ?)",
                 (client.lat, client.lon, client.traffic_area, client.email, client.phone))
     _disconnect(con)
     return client

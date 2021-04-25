@@ -45,8 +45,8 @@ def messages(area_name=None):
 
     url = MESSAGES_ENDPOINT if area_name is None else MESSAGES_ENDPOINT + \
         f'&trafficareaname={area_name}'
-    r = requests.get(url)
-    root = ET.fromstring(r.content)
+    req = requests.get(url)
+    root = ET.fromstring(req.content)
 
     msg_list = []
     for msg in root.find('messages').iter('message'):  # TODO: include None-check?
