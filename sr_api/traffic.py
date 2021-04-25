@@ -49,7 +49,7 @@ def messages(area_name=None):
     root = ET.fromstring(req.content)
 
     msg_list = []
-    for msg in root.find('messages').iter('message'):  # TODO: include None-check?
+    for msg in root.find('messages').iter('message'):
         msg_list.append({
             'timestamp': msg.find('createddate').text,
             'priority': PRIORITY_MAPPING[msg.attrib['priority']],

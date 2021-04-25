@@ -130,7 +130,7 @@ def _construct_message(msg):
     date = datetime.fromisoformat(msg['timestamp'].split('.')[0])
     msg_string = f"Nytt trafikmeddelande för {msg['title']}, "
     msg_string += f"{date.month}/{date.day} {date.hour}:{date.minute}. "
-    msg_string += f"{msg['priority']}, {msg['category']}: {msg['description']}. "
+    msg_string += f"{msg['priority']}, {msg['category']}: {msg['description']} "
     if msg['location'] is not None:
         msg_string += f"Exakt plats: {msg['location']}."
     return msg_string
@@ -151,12 +151,12 @@ def _send_message(msg, email, phone):
 
     msg_string = _construct_message(msg)
     if email is not None:
-        with open('sent_messages.txt', 'a') as f:
+        with open('sent_messages.txt', 'a+') as f:
             f.writelines(
                 [f"Sent to email {email}:\n", msg_string, "\n"])
             f.close()
     if phone is not None:
-        with open('sent_messages.txt', 'a') as f:
+        with open('sent_messages.txt', 'a+') as f:
             f.writelines(
                 [f"Sent to phone number {phone}:\n", msg_string, "\n"])
             f.close()
