@@ -129,8 +129,8 @@ def _construct_message(msg):
 
     date = datetime.fromisoformat(msg['timestamp'].split('.')[0])
     msg_string = f"Nytt trafikmeddelande för {msg['title']}, "
-    msg_string += f"{date.month}/{date.day} {date.hour}:{date.minutes}. "
-    msg_string += f"{msg['priority']}, {msg['category']}: {msg['decsription']}. "
+    msg_string += f"{date.month}/{date.day} {date.hour}:{date.minute}. "
+    msg_string += f"{msg['priority']}, {msg['category']}: {msg['description']}. "
     if msg['location'] is not None:
         msg_string += f"Exakt plats: {msg['location']}."
     return msg_string
@@ -185,8 +185,9 @@ def _handle_area_clients(client_list, current_poll, msg):
 
 
 async def server():
-    """Runs the server and all internal logic"""
+    """Runs the server and all business logic"""
     last_poll = datetime.now() - timedelta(minutes=10)
+    print('Server booted up, polling API every 10 minutes.')
     while True:
         current_poll = datetime.now()
         clients = db.get_all_clients()
